@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>468 Working Hours Checker</title>
+  <style>
+    :root {
+      --primary: #1976d2;
+      --primary-light: #e3f2fd;
+      --primary-dark: #0d47a1;
+      --danger: #d32f2f;
+      --success: #2e7d32;
+      --border-color: #dde2eb;
+      --bg: #f3f5fa;
+      --card-bg: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e3f2fd 0, #f3f5fa 40%, #e0f7fa 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 12px;
+      color: var(--text-main);
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1080px;
+      background: var(--card-bg);
+      border-radius: 18px;
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.08),
+        0 0 0 1px rgba(148, 163, 184, 0.25);
+      padding: 20px 24px 24px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .pill small {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .panel {
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 12px 12px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .panel-footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .month-label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-icon {
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      border-radius: 999px;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: all 0.12s ease;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.14);
+    }
+
+    .btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s ease;
+    }
+
+    .btn.secondary {
+      background: #ffffff;
+      color: var(--primary-dark);
+      border-color: rgba(148, 163, 184, 0.8);
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-0.5px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    .btn.secondary:hover {
+      background: #f3f6fc;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    }
+
+    .btn.small {
+      padding: 4px 9px;
+      font-size: 12px;
+    }
+
+    .calendar-grid {
+      margin-top: 4px;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 6px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .weekday {
+      text-align: center;
+      font-weight: 600;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 4px 0;
+      border-radius: 6px;
+      background: #f3f4f6;
+    }
+
+    .day-cell {
+      border-radius: 10px;
+      min-height: 70px;
+      padding: 4px 5px 6px;
+      background: #f9fafb;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: all 0.12s ease;
+    }
+
+    .day-cell:hover {
+      background: #eef2ff;
+      border-color: rgba(129, 140, 248, 0.7);
+    }
+
+    .day-cell.outside {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+
+    .day-cell.outside:hover {
+      background: #e5e7eb;
+    }
+
+    .day-cell.selected {
+      background: #e0f2fe;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.25);
+    }
+
+    /* NEW: color cells based on value */
+    .day-cell.filled-positive {
+      background: #e8f5e9;
+      border-color: #2e7d32;
+    }
+
+    .day-cell.filled-zero {
+      background: #fff3e0;
+      border-color: #fb8c00;
+    }
+
+    .day-date {
+      font-size: 11px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .day-hours {
+      width: 100%;
+      font-size: 12px;
+      padding: 4px 6px;
+      border-radius: 7px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      outline: none;
+      background: #ffffff;
+      color: var(--text-main);
+    }
+
+    .day-hours:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.18);
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .control-row label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .control-row input[type="date"],
+    .control-row input[type="file"] {
+      font-size: 12px;
+      padding: 5px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: #ffffff;
+      color: var(--text-main);
+    }
+
+    .control-row input[type="file"] {
+      border-radius: 999px;
+      padding: 4px;
+      background: transparent;
+    }
+
+    .control-row input[type="date"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.16);
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .result {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .result h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .result-row {
+      margin-bottom: 4px;
+    }
+
+    .result-row strong {
+      font-weight: 600;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tag-success {
+      background: #e8f5e9;
+      color: var(--success);
+    }
+
+    .tag-danger {
+      background: #ffebee;
+      color: var(--danger);
+    }
+
+    .rule-conditions {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.7);
+      font-size: 12px;
+    }
+
+    .rule-conditions ul {
+      padding-left: 16px;
+      margin: 4px 0 0;
+    }
+
+    .rule-conditions li {
+      margin: 2px 0;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .app {
+        padding: 16px 12px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <div class="title-group">
+        <h1>
+          468 Working Hours Checker
+          <span class="badge">HK Continuous Contract</span>
+        </h1>
+        <div class="subtitle">
+          Enter daily hours, then pick any end date to test the 4‑week “17 hours or 68 hours” rule.
+        </div>
+      </div>
+      <div class="pill">
+        4 weeks · Sun–Sat
+        <small>Daily input · CSV supported</small>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Calendar panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="calendar-header">
+            <button class="btn-icon" id="prevMonthBtn" title="Previous month">&#x25C0;</button>
+            <span class="month-label" id="monthLabel"></span>
+            <button class="btn-icon" id="nextMonthBtn" title="Next month">&#x25B6;</button>
+          </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- Weekday headers + cells injected by JS -->
+        </div>
+
+        <div class="panel-footer">
+          Click any date cell to set it as the calculation end date. Type hours directly in each day.
+        </div>
+      </div>
+
+      <!-- Controls + result panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Check &amp; Data</div>
+        </div>
+
+        <div class="control-row">
+          <label for="endDateInput">End date for 4‑week check:</label>
+          <input type="date" id="endDateInput" />
+        </div>
+
+        <div class="control-row" style="margin-top:10px;">
+          <button class="btn small" id="checkBtn">
+            &#x2714; Check 468 rule
+          </button>
+        </div>
+
+        <div class="control-row" style="margin-top:10px;">
+          <button class="btn secondary small" id="exportBtn">
+            &#x21E9; Export CSV
+          </button>
+          <label class="muted">
+            &#x21E7; Import CSV:
+            <input type="file" id="importInput" accept=".csv" />
+          </label>
+        </div>
+
+        <div class="rule-conditions">
+          <strong>Rule summary (468):</strong>
+          <ul>
+            <li>Each of the 4 weeks has at least 17 hours; <em>or</em></li>
+            <li>Total hours over the 4 weeks is at least 68 hours.</li>
+          </ul>
+        </div>
+
+        <div class="result" id="result" style="display:none; margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Date helpers ---
+    function startOfMonth(date) {
+      const d = new Date(date);
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function endOfMonth(date) {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + 1, 0);
+      d.setHours(23, 59, 59, 999);
+      return d;
+    }
+
+    function startOfWeekSun(date) {
+      const d = new Date(date);
+      const day = d.getDay(); // 0 = Sun
+      d.setDate(d.getDate() - day);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function addDays(date, n) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + n);
+      return d;
+    }
+
+    function formatISODate(d) {
+      return d.toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+
+    function parseISODate(str) {
+      const [y, m, d] = str.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function buildCalendar(currentMonth) {
+      const start = startOfMonth(currentMonth);
+      const firstGridDay = startOfWeekSun(start);
+      const days = [];
+      let current = firstGridDay;
+      for (let i = 0; i < 42; i++) {
+        days.push(new Date(current));
+        current = addDays(current, 1);
+      }
+      return days;
+    }
+
+    function getFourWeeksEnding(endDate) {
+      const endWeekStart = startOfWeekSun(endDate);
+      const weeks = [];
+      for (let i = 3; i >= 0; i--) {
+        const weekStart = addDays(endWeekStart, -7 * i);
+        const weekEnd = addDays(weekStart, 6);
+        weeks.push({ start: weekStart, end: weekEnd });
+      }
+      return weeks;
+    }
+
+    function sumHoursForWeek(week, hoursByDate) {
+      let sum = 0;
+      let d = new Date(week.start);
+      while (d <= week.end) {
+        const key = formatISODate(d);
+        const val = Number(hoursByDate[key] ?? 0);
+        sum += isNaN(val) ? 0 : val;
+        d = addDays(d, 1);
+      }
+      return sum;
+    }
+
+    // NEW: update cell color based on value
+    function updateCellColor(cell, iso) {
+      cell.classList.remove("filled-positive", "filled-zero");
+      const raw = hoursByDate[iso];
+      if (raw === "" || raw === undefined || raw === null) return;
+      const v = Number(raw);
+      if (isNaN(v)) return;
+      if (v === 0) {
+        cell.classList.add("filled-zero");
+      } else if (v > 0) {
+        cell.classList.add("filled-positive");
+      }
+    }
+
+    // --- State ---
+    let currentMonth = startOfMonth(new Date());
+    let hoursByDate = {}; // { 'YYYY-MM-DD': number }
+    let selectedEndDate = formatISODate(new Date());
+
+    const weekDayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    // --- DOM ---
+    const monthLabelEl = document.getElementById("monthLabel");
+    const calendarGridEl = document.getElementById("calendarGrid");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const endDateInput = document.getElementById("endDateInput");
+    const checkBtn = document.getElementById("checkBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importInput = document.getElementById("importInput");
+    const resultEl = document.getElementById("result");
+
+    function renderCalendar() {
+      calendarGridEl.innerHTML = "";
+
+      // Weekday headers
+      weekDayLabels.forEach((label) => {
+        const div = document.createElement("div");
+        div.className = "weekday";
+        div.textContent = label;
+        calendarGridEl.appendChild(div);
+      });
+
+      const days = buildCalendar(currentMonth);
+      const currentMonthIndex = currentMonth.getMonth();
+
+      days.forEach((day) => {
+        const iso = formatISODate(day);
+        const inMonth = day.getMonth() === currentMonthIndex;
+        const hours = hoursByDate[iso] ?? "";
+
+        const cell = document.createElement("div");
+        cell.className = "day-cell";
+        if (!inMonth) cell.classList.add("outside");
+        if (iso === selectedEndDate) cell.classList.add("selected");
+
+        // apply color based on existing value
+        updateCellColor(cell, iso);
+
+        const dateLabel = document.createElement("div");
+        dateLabel.className = "day-date";
+        dateLabel.textContent = day.getDate();
+
+        // optional: mark Sundays as week end
+        if (day.getDay() === 0) {
+          const wrap = document.createElement("div");
+          wrap.style.display = "flex";
+          wrap.style.justifyContent = "space-between";
+          wrap.style.alignItems = "center";
+          const left = document.createElement("span");
+          left.textContent = day.getDate();
+          left.style.fontSize = "11px";
+          left.style.color = "#6b7280";
+          wrap.appendChild(left);
+
+          const tag = document.createElement("span");
+          tag.textContent = "End";
+          tag.style.fontSize = "9px";
+          tag.style.padding = "1px 5px";
+          tag.style.borderRadius = "999px";
+          tag.style.background = "#e5e7eb";
+          tag.style.color = "#6b7280";
+          wrap.appendChild(tag);
+
+          dateLabel.innerHTML = "";
+          dateLabel.appendChild(wrap);
+        }
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "0";
+        input.step = "0.1";
+        input.className = "day-hours";
+        input.placeholder = "Hours";
+        input.value = hours;
+
+        input.addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+
+        input.addEventListener("input", () => {
+          const v = input.value;
+          if (v === "") {
+            hoursByDate[iso] = "";
+          } else {
+            const num = Number(v);
+            hoursByDate[iso] = isNaN(num) ? "" : num;
+          }
+          // update color when value changes
+          updateCellColor(cell, iso);
+        });
+
+        cell.addEventListener("click", () => {
+          selectedEndDate = iso;
+          endDateInput.value = selectedEndDate;
+          renderCalendar();
+        });
+
+        cell.appendChild(dateLabel);
+        cell.appendChild(input);
+        calendarGridEl.appendChild(cell);
+      });
+
+      const label = currentMonth.toLocaleString("en-GB", {
+        year: "numeric",
+        month: "long",
+      });
+      monthLabelEl.textContent = label;
+    }
+
+    function run468Check() {
+      if (!selectedEndDate) {
+        alert("Please select an end date.");
+        return;
+      }
+      const end = parseISODate(selectedEndDate);
+      const fourWeeks = getFourWeeksEnding(end);
+      const weeklyTotals = fourWeeks.map((w) => sumHoursForWeek(w, hoursByDate));
+      const allWeeks17Plus = weeklyTotals.every((h) => h >= 17);
+      const total4Weeks = weeklyTotals.reduce((a, b) => a + b, 0);
+      const meets68 = total4Weeks >= 68;
+      const met = allWeeks17Plus || meets68;
+
+      let html = "";
+      html += `<h2>Result</h2>`;
+      html += `<div class="result-row">End date: <strong>${selectedEndDate}</strong></div>`;
+      html += `<div class="result-row">4‑week total: <strong>${total4Weeks.toFixed(
+        2
+      )} hours</strong></div>`;
+
+      html += `<div class="result-row" style="margin-top:6px;">Weekly totals (Sun–Sat):<br>`;
+      weeklyTotals.forEach((w, i) => {
+        const wk = fourWeeks[i];
+        html += `Week ${i + 1} (${formatISODate(wk.start)} – ${formatISODate(
+          wk.end
+        )}): <strong>${w.toFixed(2)} hours</strong><br>`;
+      });
+      html += `</div>`;
+
+      html += `<div class="result-row" style="margin-top:6px;">Condition A (each week ≥ 17): <strong>${
+        allWeeks17Plus ? "YES" : "NO"
+      }</strong><br>`;
+      html += `Condition B (4‑week total ≥ 68): <strong>${meets68 ? "YES" : "NO"}</strong></div>`;
+
+      html += `<div class="result-row" style="margin-top:8px;">468 rule met: `;
+      html += `<span class="tag ${
+        met ? "tag-success" : "tag-danger"
+      }">${met ? "MET" : "NOT MET"}</span></div>`;
+
+      resultEl.innerHTML = html;
+      resultEl.style.display = "block";
+    }
+
+    function exportCSV() {
+      const rows = [["date", "hours"]];
+      const keys = Object.keys(hoursByDate).sort();
+      keys.forEach((date) => {
+        const v = hoursByDate[date];
+        if (v !== "" && !isNaN(Number(v))) {
+          rows.push([date, String(v)]);
+        }
+      });
+      const csv = rows.map((r) => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "hours_468.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importCSV(file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target.result;
+        const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
+        if (lines.length < 2) return;
+
+        const header = lines[0].split(",");
+        const dateIdx = header.indexOf("date");
+        const hoursIdx = header.indexOf("hours");
+        if (dateIdx === -1 || hoursIdx === -1) {
+          alert("CSV must have headers: date,hours");
+          return;
+        }
+
+        const newData = {};
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(",");
+          const date = (cols[dateIdx] || "").trim();
+          const hours = (cols[hoursIdx] || "").trim();
+          if (date) {
+            const num = Number(hours);
+            newData[date] = isNaN(num) ? "" : num;
+          }
+        }
+        hoursByDate = Object.assign({}, hoursByDate, newData);
+        renderCalendar();
+      };
+      reader.readAsText(file);
+    }
+
+    // --- Event listeners ---
+    prevMonthBtn.addEventListener("click", () => {
+      const d = new Date(currentMonth);
+      d.setMonth(d.getMonth() - 1);
+      currentMonth = startOfMonth(d);
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      const d = new Date(currentMonth);
+      d.setMonth(d.getMonth() + 1);
+      currentMonth = startOfMonth(d);
+      renderCalendar();
+    });
+
+    endDateInput.addEventListener("change", () => {
+      selectedEndDate = endDateInput.value;
+      renderCalendar();
+    });
+
+    checkBtn.addEventListener("click", run468Check);
+    exportBtn.addEventListener("click", exportCSV);
+    importInput.addEventListener("change", () => {
+      const file = importInput.files[0];
+      if (file) importCSV(file);
+    });
+
+    // --- Init ---
+    endDateInput.value = selectedEndDate;
+    renderCalendar();
+  </script>
+</body>
+</html>
